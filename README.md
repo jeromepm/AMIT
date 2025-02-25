@@ -54,7 +54,7 @@ This tool is designed to make image classifcation easy and more user freindly.
 4. Label Images
   - Images that have something in them, will need to be labled. You can check the box of the labels that are in the image. Select as many as are relevent. 
 5. Download the Project
-  - You can then download the project as a pickle file with or without numpy arrays of the images. The file can then be used directly with a predefinded mode or converted to a TFRecord file to include in another,  larger project.
+  - You can then download the project as a pickle file with or without numpy arrays of the images. The file can then be used directly with a predefinded model for [transfer learning and fine-tuning](https://www.tensorflow.org/tutorials/images/transfer_learning) or converted to a [TFRecord](https://www.tensorflow.org/tutorials/load_data/tfrecord) file to include in another, larger project.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
