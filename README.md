@@ -7,12 +7,12 @@
 #### Docker
 One option is to download the docker image. This method may not allow you to connect to your IP Cameras if your docker network isn't setup to allow containers into the local network. In this instance, you will need to manually upload images into the folders for classification. 
 ```
-docker pull
+docker pull jeromepm/amit
 docker run -d -p <PORT>:8286
 ```
 Verify the image:
 ```
-42e54b40ef37eab2424b248c811bc9608ddda75fa87be7ff2423cef3cf31c294
+sha256:2918c77498a78fc36444d982e4a959480de9fbb29939a66b9c08ac9abb105886
 ```
 
 If you would like access to the images and files, you will need to mount a volume to the data directory.
@@ -26,8 +26,8 @@ You can also clone this repository and run it directly.
 
 ```
 git clone
-https://github.com/jeromepm/AMIT.git
-cd AMIT
+https://github.com/jeromepm/amit.git
+cd amit
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
