@@ -1,4 +1,4 @@
-# A.M.I.T. A Multiclassifcation Image Tool
+# A.M.I.T. A Multiclassification Image Tool
 <img src="https://raw.githubusercontent.com/jeromepm/AMIT/refs/heads/main/static/AMIT.jpg" width=50% height=50%>
 
 ## Overview
@@ -40,11 +40,11 @@ The only configuration option currently is the port that it listens on.
 
 
 ## Usage
-This tool is designed to make image classifcation easy and more user freindly. 
+This tool is designed to make image classification easy and more user-friendly. 
 
 1. Create a project. 
-  - Give it a name and short description 
-  - Select the control lable name and create your own labels
+  - Give it a name and a short description 
+  - Select the control label name and create your own labels
   - Create sources using your home IP cameras with RTSP enabled or and internal hosting tool
     - *This is not needed if you plan on uploading images manually.*
 2. Create a schedule
@@ -53,9 +53,9 @@ This tool is designed to make image classifcation easy and more user freindly.
 3. Move Images
   - The images will either have "nothing" or something. Select which and finish what's in the folder.
 4. Label Images
-  - Images that have something in them, will need to be labled. You can check the box of the labels that are in the image. Select as many as are relevent. 
+  - Images that have something in them will need to be labeled. You can check the box of the labels that are in the image. Select as many as are relevant.  
 5. Download the Project
-  - You can then download the project as a pickle file with or without numpy arrays of the images. The file can then be used directly with a predefinded model for [transfer learning and fine-tuning](https://www.tensorflow.org/tutorials/images/transfer_learning) or converted to a [TFRecord](https://www.tensorflow.org/tutorials/load_data/tfrecord) file to include in another, larger project.
+  - You can then download the project as a pickle file with or without numpy arrays of the images. The file can then be used directly with a predefined model for [transfer learning and fine-tuning](https://www.tensorflow.org/tutorials/images/transfer_learning) or converted to a [TFRecord](https://www.tensorflow.org/tutorials/load_data/tfrecord) file to include in another, larger project.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
