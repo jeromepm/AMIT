@@ -46,6 +46,7 @@ This tool is designed to make image classifcation easy and more user freindly.
   - Give it a name and short description 
   - Select the control lable name and create your own labels
   - Create sources using your home IP cameras with RTSP enabled or and internal hosting tool
+    - *This is not needed if you plan on uploading images manually.*
 2. Create a schedule
   - Select the times of day and frequency to pull images from the sources.
   - The schedule will place the images in a folder to choose what is in it
