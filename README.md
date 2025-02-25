@@ -13,7 +13,7 @@ docker run -d -p <PORT>:8286
 ```
 Verify the image:
 ```
-sha256:2918c77498a78fc36444d982e4a959480de9fbb29939a66b9c08ac9abb105886
+sha256:5f9c4b4b335d425894ea946e4957462184cb73cfb03c14e9af345c26ceadd872
 ```
 
 If you would like access to the images and files, you will need to mount a volume to the data directory.
@@ -36,7 +36,7 @@ python app.py
 ```
 
 ## Configuration
-The only configuration option currently is the port that it listens on. 
+The only configuration option currently is the port that it listens on and the timezone for which the timestamps are derived from.
 
 
 ## Usage
