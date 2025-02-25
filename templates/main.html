@@ -1,7 +1,7 @@
 <div class="my-body">
-  {% if projects is defined %}
   <div id='project_div' class="create_project full">
-      <table class='my-table full' id='project_tables'>
+  {% if projects is defined %}
+    <table class='my-table full' id='project_tables'>
         <tr>
           {% for key, value in projects[0].items() %}
             <th>{{key}}</th>
@@ -19,9 +19,11 @@
       </table>
     </div>
   {% else %}
-  <div class='create_project full'>
-    <h4>AM.I.T.: A Mutliclassification Image Tool</h4>
-    <img src="static/AMIT.jpg" class="half">
+    <h4>A.M.I.T.: A Mutliclassification Image Tool</h4>
+    <img src="static/AMIT.jpg" class="third" style="float: left; margin-right: 15px;">
+    <p>&emsp; A.M.I.T. Will help anyone create their own image classification datasets for maching learning models. Using your own data, your model can have greater accuracy and a focus on what is important to you. Using classifcation instead of object detection <i>(little boxes over objects)</i> means checking a box when the object is in the image instead of drawing the box around each image, and selecting the object type. Easier data ingestion means you get to use AI faster! Best of all: <b>NO DATA NEED LEAVE YOUR NETWORK!</b>
+
+    &emsp; Lets get started. Go ahead and click the "New" button below to make your first project.</p>
   </div>
   {% endif %}
   <div class='create_project half' style="display: none;">
