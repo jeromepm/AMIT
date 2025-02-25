@@ -1,5 +1,5 @@
 # A.M.I.T. A Multiclassifcation Image Tool
-
+![AMMIT](static/AMIT.jpg)
 ## Overview
 **A.M.I.T.** is a tool designed to create images from a local network of IP cameras and create a personal image classification model. I've chosen multi-classification for its speed compared to object detection on smaller systems like Raspberry Pi's. It is also easier to create the dataset as there's only boxes to be checked not to be drawn. There are several tools out there for object detection, but most are, I feel, overly complicated for a simple task.
 
