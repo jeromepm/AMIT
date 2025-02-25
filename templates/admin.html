@@ -1,0 +1,80 @@
+<div class="my-body">
+<div class="right-thrid">
+  <div style="width: 46vw; float: left; margin-left: 2vw; margin-top: 2vh;"><canvas id='byLblPlot'></canvas></div>
+  <div style="width: 46vw; float: left; margin-left: 2vw; margin-top: 2vh;"><canvas id='byCamPlot'></canvas></div>
+</div>
+
+<table id="admin_data" class='my-table'>
+  <tr>
+    <th></th>
+    <th>Count</th>
+  </tr>
+  {% for key, value in data.items() %}
+    <tr>
+    <td>{{key}}</td>
+    <td style="text-align: center;">{{value}}</td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+<script>
+let pdiv = document.getElementById('byLblPlot')
+let obj = {{byLabelGraph | safe}}
+new Chart( pdiv, config = {
+          type: 'pie',
+          data: obj['data'],
+          options: {
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: obj['title']
+              },
+              legend: { 
+                 display: true,
+                 position: 'right'
+              }
+            }
+          }
+          });
+
+pdiv = document.getElementById('byCamPlot')
+obj = {{byImageGraph | safe}}
+new Chart( pdiv, config = {
+          type: 'pie',
+          data: obj['data'],
+          options: {
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: obj['title']
+              },
+              legend: { 
+                 display: true,
+                 position: 'right'
+              },
+              tooltip: {
+                  callbacks: {
+                      label: function (context) {
+                          let label = context.label || '';
+                          let value = context.raw || 0;
+                          let total =
+                              context.dataset.data.
+                              reduce((acc, curr) => acc + curr, 0);
+                          let percentage = (value / total * 100).toFixed(2) + '%';
+                          return label + ': ' + value + ' (' + percentage + ')';
+                      }
+                  }
+              }
+            }
+          }
+          });
+
+//var camPlot = document.getElementById('byCamPlot')
+//let imgFigure = JSON.parse({{byImageGraph | safe}})
+//Plotly.newPlot('byCamPlot', imgFigure, {});
+//camPlot.on('plotly_click', function(data){
+//    alert('Closest point clicked:\n\n'+data.points[0].label+'\n'+data.points[0].i);
+//});
+</script>

@@ -1,0 +1,27 @@
+<div class="my-body">
+    <form action="{{ url_for('main') }}" method="post" id="act-label-form">
+        <input type="text" name="project" value="{{project}}" style="display: none">
+        <input type="text" name="cur_img_dir" value="{{rev_dir.location}}" style="display: none">
+        <input type="text" name="mv_fname" value="{{rvw_image}}" style="display: none">
+        <img class="main_image" src="/img/{{rev_dir.location}}/{{rvw_image}}?pro={{project}}">
+        <br><br><br>
+      <div class="btn-div">
+        {% for directory in dirs %}
+          {% if directory != 'Review' %}
+          <button type="submit" formaction='/mv/{{d_locations[loop.index0]}}' value="{{directory}}">{{directory}}</button>
+          {% endif %}
+        {% endfor %}
+
+    <!--
+    <input class="dir-btn" type="submit" formaction='/mv/labels' value="Should Label">
+        <input class="dir-btn" type="submit" formaction='/mv/chickens' value="Chickens">
+        <input class="dir-btn" type="submit" formaction='/mv/nothing' value="Nothing">
+        <input class="dir-btn" type="submit" formaction='/mv/dog' value="Dog">
+        <input class="dir-btn" type="submit" formaction='/mv/person' value="Person">
+        <input class="dir-btn" type="submit" formaction='/mv/mouse' value="Mouse">
+        <input class="dir-btn" type="submit" formaction='/mv/backup_chickens' value="Back Up Chickens">
+        <input class="dir-btn" type="submit" formaction='/mv/backup_nothing' value="Back Up Nothing">
+    -->
+	  </div>
+	 </form>
+</div>

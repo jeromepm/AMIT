@@ -1,0 +1,12 @@
+.git
+.gitignore
+Dockerfile
+README.md
+new_app.py
+*pkl
+venv/
+automations/
+data/data_files/*
+data/review_images/*
+data/labeling_images/*
+data/labeling_images/schedules/*

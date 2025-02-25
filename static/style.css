@@ -1,0 +1,431 @@
+body {
+    background-color: rgb(23, 32, 36);
+    font-family: "Consolas";
+    text-align: center;
+    color: #E5E1E6;
+}
+
+.full{ width: 100%  !important; }
+.almost{ width: 80vw !important; }
+.two_third{ width: 60%  !important; }
+.half{ width: 50%  !important; }
+.third{ width: 30%  !important; }
+.quarter{ width: 25%  !important};  
+.almost_tall{ height: 80vh  !important; }
+
+
+.auto {height:auto; width:auto;}
+.middle_h {margin-left: auto;  margin-right: auto;}
+
+.input_error {
+  border-color: #ff4500;
+  box-shadow: 0 0 10px #ff4500;
+  outline: none;
+}
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;	
+  overflow: hidden;
+  background-color: #43464b;
+  padding: 10px 0px;
+  text-align: center;
+  width: 100%;
+}
+
+.header a {
+  color: #E5E1E6;
+  text-align: center;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px; 
+  line-height: 25px;
+  border-radius: 4px;
+}
+
+.my-body{
+  width: 100%;
+  padding-top: 20px;
+}
+
+/* The container */
+.checkbox-container {
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;a
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox-container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox-container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+button {
+  border: none;
+  border-radius: 5%;
+  text-decoration: none;
+  background-color: #2196F3;
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 22px;
+}
+
+::file-selector-button  {
+  border: none;
+  border-radius: 5%;
+  text-decoration: none;
+  background-color: #2196F3;
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 22px;
+}
+
+.slidecontainer {
+  position: relative;
+  width: 75vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 70vw;
+  height: 15px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 15px;
+  background: #2196F3;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 15px;
+  background: #2196F3;
+  cursor: pointer;
+}
+
+.main_image{
+  position: relative;
+  max-width: 70vw;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-div{
+  position: relative;
+  width: 75vw;
+  margin-left: auto;
+  margin-right: auto;	
+}
+.slider-data {
+  position: absolute;
+  display: none;
+  z-index: 3;
+}
+
+.slidecontainer:hover + .slider-data {
+  display: block;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #43464b;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+.ellipsis {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+.fixed_header {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: auto;
+  text-align: center;
+}
+.fixed_header tbody {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  max-height: 100px;
+}
+.fixed_header thead,
+.fixed_header tr {
+  display: table;
+  width: 100%;
+}
+.my-table {
+  border-collapse: collapse;
+}
+
+.my-table td, .my-table th {
+  text-align: left;
+  padding: 8px;
+}
+
+.my-table tr:nth-child(even){background-color: #7b9cab;}
+
+
+.my-table tr:hover {background-color: #ddd; color: black;}
+
+.my-table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #43464b;
+  color: white;
+}
+
+
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 3; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal_content {
+  background-color: #fefefe;
+  border-radius: 6px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+  width: fit-content;
+  height: fit-content;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0} 
+  to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.modal-body {
+  padding: 2px 16px; 
+  background-color: #fefefe;
+  color: black;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;  
+}
+
+/*New Project Page Configurations*/
+.create_project {
+  float: left;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+  text-align: left;
+}
+
+.create_project h3,h4{
+    padding: 0px;
+    margin: 0px;
+}
+/*Confiruation Page*/
+.thmb_img{
+  border: 1px solid #ccc;
+  border-radius: 4px;  
+  max-width:24%; 
+  max-height:23%; 
+  float: left;
+}
+
+.selected{
+  background-color: #A9A9A9;
+  color: black;
+}
+
+/*Form Configurations*/
+.my_forms {
+  width: 50vw;
+  float: right;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+
+input[type=text], select, textarea{
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+/* Style the label to display next to the inputs */
+label {  
+  display: inline-block;
+}
+
+/*Collapsing Sections*/
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.content {
+  padding: 18px;
+  display: none;
+  overflow: hidden;
+}

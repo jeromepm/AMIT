@@ -1,0 +1,14 @@
+<div class="my-body">
+  <form action="{{ url_for('main')}}" method="post" id="label-form">
+    <img id="rvw_fname" class="main_image" name="rvw_fname" src="/review/{{rvw_image}}">
+    <div class="btn-div">
+        <input class="dir-btn" type="submit" formaction='/mv/chickens' value="Chickens">
+        <input class="dir-btn" type="submit" formaction='/mv/nothing' value="Nothing">
+        <input class="dir-btn" type="submit" formaction='/mv/dog' value="Dog">
+        <input class="dir-btn" type="submit" formaction='/mv/person' value="Person">
+        <input class="dir-btn" type="submit" formaction='/mv/mouse' value="Mouse">
+        <input class="dir-btn" type="submit" formaction='/mv/backup_chickens' value="Back Up Chickens">
+        <input class="dir-btn" type="submit" formaction='/mv/backup_nothing' value="Back Up Nothing">
+	  </div>
+  </form>
+</div>

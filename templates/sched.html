@@ -1,0 +1,359 @@
+<div class="my-body">
+{% if sources %}
+  {% if schedules %}
+  <div class='create_project full'>
+    <span onclick="open_close('active_sources')"><h3 style="text-align: center;">Current Schedules</h3></span>
+    <div id='active_sources'>
+      <table class="my-table full" >
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Days of Week</th>
+            <th>Times of Day</th>
+            <th>Frequency</th>
+            <th>Sources - 'Project'(location)</th>
+            <th>&#9998;</th>
+          </tr>
+        </thead>
+        <tbody id='sched_tbl'>    
+        {% for schedule in schedules %}
+        <tr>
+          <td>{{schedule.name}}</td>
+          <td>{{schedule.trigger.day_of_week}}</td>
+          <td>{{schedule.trigger.times_of_day}}</td>
+          <td>{{schedule.trigger.frequency}}</td>
+          <td>
+          {% for source in schedule.sources %}
+            '{{source.project}}'({{source.location}}) 
+          {% endfor %}
+          </td>
+          <td>  
+          <!--<button type="button" value="{{schedule.id}}" onclick="edit_sch('{{loop.index0}}')">Edit</button>-->
+          <button type="button" value="{{schedule.id}}" onclick="verify_del(this.value, '{{schedule.name}}')">Delete</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  {% endif %}
+  <div class='create_project half'>
+    <p>
+    &emsp;A schedule is the job that runs to gather the images for classfication.The name should be short as the configuration explains the operation.<br>
+    <hr>
+    &emsp;The days of the week are configuratble if you know that certain days have more actvity and a higher chance of images that need classification. <i>(If your Amazon delivery day is Thursday, then that might be the only day for this specifc schedule)</i> <br><br>
+    &emsp;When you select "Every Day", it will remove all of the day options to prevent confusion.<br><br>
+    <hr>
+    &emsp;The time of the day is a start and end time by the hour. If you know that certain hours have more actvity and a higher chance of images that need classification You can cut down to those hours. <i>(With the Amazon example, you can pick between 10:00 AM and 2:00 PM if those are you normal times of reciveing packages.)</i> To create an overnight schedule, select a start time that is after the end time. Note that this will start at midnight on the first selected day, if Every Day is not selected.<i>(A start time of 10PM and an end time of 6AM with Friday, Saterday, and Sunday selected would mean that the first images would start coming in on Friday at midnight to 6AM and start again at 10PM till 6AM on Saterday.)</i><br>
+    <br>
+    &emsp;When you select "All Day", it will remove the Start Time and End Time options to prevent confusion.<br>
+    <br>
+    &emsp;Each schedule can only have one time of day configured, but you can make multiple schedules for the different times of day. If you have an overnight schedule that is not everyday, the schedule will start at midnight on the first day selected and end at midnight the last day selected.<br><br>
+    <hr>
+    &emsp;Each schedule can have mutiple images sources from all projects. Prior to the schedule getting created you will get an overview of how many images a day and a week this schedule will create. 
+    </p>
+  </div>
+  <div class='create_project half'>
+    <form method="post" id="new_schedule">
+      <h3>Schedule Configuration</h3><br>
+      <label for="schname">Name:<span title="The name can only contain alpha numaric charecters and underscores. (a-z A-Z 0-9 _ )"> &#9432;</span></label>
+      <input style="width: 50ch;" type="text" id="schname" maxlength="50" name="schname" pattern="[a-zA-Z0-9_]{1,50}" title="Schedule Name">
+      <hr>
+      <div id='dow_choices'>
+        <h3>Days of Week:</h3><br>
+        <label class="checkbox-container">Every Day
+          <input type="checkbox" name="every_day" onchange="open_close('day_selections')" value='every_day' >
+          <span class="checkmark"></span>
+        </label>
+        <br><br>
+        <div id=day_selections>
+          <label class="checkbox-container">Sun
+            <input type="checkbox" name="day_of_week" value=6>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox-container">Mon
+            <input type="checkbox" name="day_of_week" value=0>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox-container">Tues
+            <input type="checkbox" name="day_of_week" value=1>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox-container">Wed
+            <input type="checkbox" name="day_of_week" value=2>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox-container">Thurs
+            <input type="checkbox" name="day_of_week" value=3>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox-container">Fri
+            <input type="checkbox" name="day_of_week" value=4>
+            <span class="checkmark"></span>
+          </label>
+          <label class="checkbox-container">Sat
+            <input type="checkbox" name="day_of_week" value=5>
+            <span class="checkmark"></span>
+          </label>
+        </div>
+      </div>
+      <hr>
+      <h3>Time of Day:</h3><br>
+      <label class="checkbox-container">All Day
+        <input type="checkbox" name="all_day" onchange="open_close('time_selections')" value='all_day'>
+        <span class="checkmark"></span>
+      </label>
+      <br><br>
+      <div id='time_selections'>
+        <label for="strt_hr">Start Time:</label>
+        <select style="width: 75px;" name="strt_hr" id="strt_hr" onchange="">
+          <option value="01">01:00</option>
+          <option value="02">02:00</option>
+          <option value="03">03:00</option>
+          <option value="04">04:00</option>
+          <option value="05">05:00</option>
+          <option value="06">06:00</option>
+          <option value="07">07:00</option>
+          <option value="08">08:00</option>
+          <option value="09">09:00</option>
+          <option value="10">10:00</option>
+          <option value="11">11:00</option>
+          <option value="00" selected>12:00</option>          
+        </select> 
+        <label for="strt_12hrap">AM/PM:</label>
+        <select style="width: 60px;"  name="strt_12hrap" id="strt_12hrap" onchange="">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option>
+        </select>
+        <br><br>
+        <label for="end_hr">End Time:&nbsp;&nbsp;</label>
+        <select style="width: 75px;" name="end_hr" id="end_hr" onchange="">
+          <option value="01" selected>01:00</option>
+          <option value="02">02:00</option>
+          <option value="03">03:00</option>
+          <option value="04">04:00</option>
+          <option value="05">05:00</option>
+          <option value="06">06:00</option>
+          <option value="07">07:00</option>
+          <option value="08">08:00</option>
+          <option value="09">09:00</option>
+          <option value="10">10:00</option>
+          <option value="11">11:00</option>
+          <option value="00">12:00</option>          
+        </select> 
+        <label for="end_12hrap">AM/PM:</label>
+        <select style="width: 60px;"  name="end_12hrap" id="end_12hrap" onchange="">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option>
+        </select>
+        <br><br>
+      </div>
+      <label for="freq">Frequency:&nbsp;</label>
+      <select style="width: 244px;"  name="freq" id="freq" onchange="">
+        <option value="1m">every minute</option>
+        <option value="5m">every 5 minutes</option>
+        <option value="10m">every 10 minutes</option>
+        <option value="15m" selected>every 15 minutes</option>
+        <option value="20m">every 20 minutes</option>
+        <option value="30m">every 30 minutes</option>
+        <option value="1h">every hour</option>
+      </select>
+      <br><br>
+      <hr>
+      <h3>Image sources:</h3><br>
+      <table class="fixed_header my-table" id='img_src_tbl'>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Source Location</th>
+            <th>Select</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for source in sources %}
+          {% for entry in source.sources %}
+          <tr>
+            <td style="width:30%">{{source.project}}</td>
+            <td style="width:60%">{{entry.location}}</td>
+            <td>  
+              <label style="display: block; font-size: 18px;" class="checkbox-container">
+                <input type="checkbox" name="image_source" value="{{source.project}}::{{entry.id}}::{{entry.location}}::{{entry.url}}">
+                <span class="checkmark" style="top: -7px;"></span>
+              </label>
+            </td>
+          </tr>
+              {% endfor %}
+            {% endfor %}
+        </tbody>
+      </table>
+    </form>    
+    <br>  
+  </div>
+  <button type="button" style="margin-top: 12px;" onclick="verify_sched()">Create</button>
+  </div>
+{% else %}
+  <div class='create_project full'>
+    <h3>No Sources</h3><br>
+    <p>
+    &emsp;Without any sources, there is nothing to take images from. First <a href="/">create a project</a> with at least one image source. <br>
+  </p>
+  </div>
+{% endif %}  
+</div>
+<script>
+  function verify_sched() {
+    const form = document.getElementById("new_schedule")
+    let formData = new FormData(form);
+    let pattern = /(\d+)([a-zA-Z])/i;
+    let interval = formData.get('freq').match(pattern);
+    let error = false
+    let error_text = '<b>Please correct the following errors:</b><br><br>'
+    if (formData.get('schname').trim() == '' || formData.get('schname').trim().length < 5 || formData.get('schname').trim().length > 50) {
+      document.getElementById('schname').classList.add("input_error");
+      error_text = error_text + '&#9873; Please make sure the shcedule name is between 5 and 50 charecters.<br>'
+      error = true
+    } else {
+      document.getElementById('schname').classList.remove("input_error");
+    }
+
+    if (formData.getAll("image_source").length == 0) {
+      document.getElementById('img_src_tbl').classList.add("input_error");
+      error_text = error_text + '&#9873; Please select at lease one image source from the table.<br>'
+      error = true
+    } else {
+      document.getElementById('img_src_tbl').classList.remove("input_error");
+    }
+
+    if (formData.getAll("day_of_week").length == 0 && formData.has("every_day") == false) {
+      document.getElementById('dow_choices').classList.add("input_error");
+      error_text = error_text + '&#9873; Please select at least one day of the week or "Every Day".<br>'
+      error = true
+    } else {
+      document.getElementById('dow_choices').classList.remove("input_error");
+    }
+    if (error == true){
+      let d = document.createElement("div");
+      let p = document.createElement("p");
+      p.innerHTML = error_text
+      d.appendChild(p)
+      let btn1 = document.createElement("button");
+      btn1.type = 'button'
+      btn1.innerHTML = 'Go Back'
+      btn1.setAttribute("onclick", "open_close('modal')")
+      d.appendChild(btn1)
+      display_modal('error',d,'#ff4500');      
+    } else {
+      let diffMins = 0
+      let total_days = 0
+      let sources = 0
+      console.log(Object.fromEntries(formData));
+      console.log(formData.getAll("day_of_week"))
+      console.log(formData.getAll("image_source"))
+      let s_hour = (formData.get('strt_12hrap') == 'AM') ? Number(formData.get('strt_hr')) : Number(formData.get('strt_hr')) + 12
+      let e_hour = (formData.get('end_12hrap') == 'AM') ? Number(formData.get('end_hr')) : Number(formData.get('end_hr')) + 12
+      if (s_hour == e_hour || formData.get('all_day') ){
+        diffMins = 1440
+      } else {
+        let today = new Date()
+        let tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1)
+      let start_date = new Date(today.getFullYear(), today.getMonth(), today.getDate(),s_hour, Number(formData.get('strt_min  '))).getTime()
+      let end_date = new Date(today.getFullYear(), today.getMonth(), today.getDate(),e_hour, Number(formData.get('end_min'))  ).getTime()
+        diffMins = Math.round((end_date - start_date) / 60000); // minutes
+      }
+      let in_day = 0
+      if (interval[2] == 'm') {
+        in_day = ( diffMins / Number(interval[1]) )
+      } else if (interval[2] == 'h') {
+        in_day = ( (diffMins/60) / Number(interval[1]) )
+      }
+      if (formData.has('every_day')){
+        total_days = 7
+      } else if (formData.has('day_of_week')){
+        total_days = formData.getAll("day_of_week").length
+      }
+      if (formData.has('image_source')){
+        sources = formData.getAll("image_source").length
+      } 
+      console.log('This schedule will take ' + (sources * in_day) + ' images in a day, ' + (sources * total_days * in_day) + ' a week.')
+      let content = document.createElement("div");
+      let p = document.createElement("h4");
+      p.textContent = 'This schedule will create the following amount of images.'
+      content.appendChild(p)
+      content.appendChild(document.createElement("br"))
+      p = document.createElement("p")
+      p.textContent = (sources * in_day) + ' images in a day.'
+      content.appendChild(p)
+      p = document.createElement("p")
+      p.textContent = (sources * total_days * in_day) + ' a week.'
+      content.appendChild(p)
+      p = document.createElement("p")
+      p.textContent = 'Is this an acceptable number of images?'
+      content.appendChild(p)
+      let btn = document.createElement("button");
+      btn.type = 'button'
+      btn.innerHTML = 'Continue'
+      btn.setAttribute("onclick", "create_schedule()")
+      content.appendChild(btn)
+      let btn1 = document.createElement("button");
+      btn1.type = 'button'
+      btn1.innerHTML = 'Go Back'
+      btn1.setAttribute("onclick", "open_close('modal')")
+      content.appendChild(btn1)
+      display_modal('info',content,'#0a66c2');
+    }
+  }
+
+  function create_schedule() {
+    const form = document.getElementById("new_schedule");
+    let formData = new FormData(form);
+    var http = new XMLHttpRequest();
+    http.addEventListener("readystatechange", function() {
+      if(this.readyState === 4) {
+        window.location.href = http.responseURL;
+      }
+    });
+    http.open("POST", "/schedule/create");
+    http.send(formData);
+  }
+
+  function verify_del(sch_id,sch_name){
+    let d = document.createElement("div")
+    let p = document.createElement("p")
+    let text = 'Are you sure you want to delete schedule: ' + sch_name
+    p.innerHTML = text
+    d.appendChild(p)
+
+    let btn = document.createElement("button");
+    btn.type = 'button'
+    btn.innerHTML = 'Coninue'
+    btn.setAttribute("onclick", "delete_schedule('"+sch_id+"')")
+    d.appendChild(btn)
+    let btn1 = document.createElement("button");
+    btn1.type = 'button'
+    btn1.innerHTML = 'Go Back'
+    btn1.setAttribute("onclick", "open_close('modal')")
+    d.appendChild(btn1)    
+    display_modal('confirmation',d,'#0a66c2');
+  }
+
+  function delete_schedule(sch_id) {
+    let formData = new FormData();
+    formData.append('sch_id', sch_id);
+    var http = new XMLHttpRequest();
+    http.addEventListener("readystatechange", function() {
+      if(this.readyState === 4) {
+        window.location.href = http.responseURL;
+      }
+    });
+    http.open("POST", "/schedule/delete");
+    http.send(formData);
+  }
+  function edit_sch(idx) {
+    //TODO: Finish setting edit sch funtion to fill in config
+    tb = document.getElementById('sched_tbl')
+    console.log(tb)
+    console.log(tb.rows[idx])
+  }
+</script>
