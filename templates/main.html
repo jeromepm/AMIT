@@ -1,7 +1,7 @@
 <div class="my-body">
-  <div id='project_div' class="create_project full">
   {% if projects is defined %}
-    <table class='my-table full' id='project_tables'>
+  <div id='project_div' class="create_project full">
+      <table class='my-table full' id='project_tables'>
         <tr>
           {% for key, value in projects[0].items() %}
             <th>{{key}}</th>
@@ -18,13 +18,6 @@
         {% endfor %}
       </table>
     </div>
-  {% else %}
-    <h4>A.M.I.T.: A Mutliclassification Image Tool</h4>
-    <img src="static/AMIT.jpg" class="third" style="float: left; margin-right: 15px;">
-    <p>&emsp; A.M.I.T. Will help anyone create their own image classification datasets for maching learning models. Using your own data, your model can have greater accuracy and a focus on what is important to you. Using classifcation instead of object detection <i>(little boxes over objects)</i> means checking a box when the object is in the image instead of drawing the box around each image, and selecting the object type. Easier data ingestion means you get to use AI faster! Best of all: <b>NO DATA NEED LEAVE YOUR NETWORK!</b>
-    <br><br>
-    Click the "New" button below to make your first project.</p>
-  </div>
   {% endif %}
   <div class='create_project half' style="display: none;">
     <div id='new_howto_0'>
@@ -69,32 +62,129 @@
       </div>
       <div id='new_1' style="display: none;">
         <h3>Sources:</h3>
-        <label class="checkbox-container">Enable
-          <input type="checkbox" name="sources_enabled" onchange="remove_sources()" checked >
-          <span class="checkmark"></span>
-        </label>
-        <div id="auto_sources">       
         <div id="sources">
           <div class="source_entry">
             <label for="slocation">Location: <span title="The location of camera."> &#9432;</span></label>
-            <input type="text" name="slocation" class="source_data" title="Source Name" pattern="[a-zA-Z0-9,'\s]{1,255}"  placeholder="Facing the driveway">
+            <input type="text" name="slocation" class="source_data" title="Source Name" pattern="[a-zA-Z0-9,'\s]{,255}"  value="Facing the driveway">
             <label for="stype">Type: <span title="A standard web URL or a RTSP URL with a username and password."> &#9432;</span></label>
             <select name="stype" class="source_data">
               <option value="url">url</option>
               <option value="RTSP">RTSP</option>
             </select>
             <label for="surl">URL: <span title="The URL to access the camera."> &#9432;</span></label>
-            <input type="text" name="surl" class="source_data" title="Source URL" placeholder='http://192.168.0.65/imgs/standard.jpg'>
+            <input type="text" name="surl" class="source_data" title="Source URL" value='http://192.168.0.65/imgs/standard.jpg'>
             <br><br>
           </div>
         </div>
         <button type="button" class="source_data" onclick="check_url()" id="verify">Verify</button>
         <button type="button" onclick="add_new('source')" id="add_source">&#x002B;</button>
-        </div><br>
         <button type="button" onclick="next_new(1)" id="next_1">Next</button>
-        <button type="submit"  id="create" disabled>Create</button>
+        <button type="button"  id="create" disabled>Create</button>
       </div>
     </form>
   </div>
   <button type="button" id='start_new' style="margin-top: 12px;" onclick="start_new()">New</button>
 </div>
+<script>
+  function select_proj(pid){
+    let f = document.getElementById('project_tables').rows.item(pid).cells.item(0).innerHTML;
+    document.location.href = '/?pro='+f + '&a=conf';
+  }
+
+  function start_new() {
+    const f = document.getElementsByClassName('create_project');
+    let t = document.getElementById('project_div');
+    //let tb = document.getElementById('project_div');
+    let btn = document.getElementById('start_new');
+
+    if (btn.innerHTML == 'New'){
+      if (t){ 
+        t.style.display = 'none'; 
+        //tb.style.display = 'none';
+       }
+      for (var i = f.length - 1; i >= 0; i--) {
+        f[i].style.display = 'block'
+      }
+      document.getElementById('new_0').style.display = 'block';
+      document.getElementById('new_howto_0').style.display = 'block';
+      document.getElementById('new_1').style.display = 'none';
+      document.getElementById('new_howto_1').style.display = 'none';
+      btn.innerHTML = 'Cancel';
+    } else {
+      if (t){ 
+        t.style.display = 'block';
+        //tb.style.display = 'block'
+        }
+      for (var i = f.length - 1; i >= 0; i--) {
+        f[i].style.display = 'none'
+      }
+      btn.innerHTML = 'New';
+    }
+  }
+
+  function enable_next(btn_id){
+    let text = document.getElementById("pname").value;
+    let desc = document.getElementById("pdescr").value;
+    let l = document.getElementById("lnames").value;
+    let labels = l.split(",")
+    filter_labels = labels.filter(function(v) { return v !== document.getElementById("ctrl_name").value })
+    real_labels = filter_labels.filter(function(v) { return v !== '' })
+    console.log(real_labels.length)
+    if (text.trim().length > 4 & desc.trim().length > 4 & real_labels.length > 0){
+      console.log(btn_id)
+      document.getElementById('next_'+ btn_id).disabled = false;
+    }
+  }
+
+  function next_new(num){
+    if (num == 1) {
+      document.getElementById('new_' + (num - 1)).style.display = 'block';
+      document.getElementById('new_howto_' + (num - 1)).style.display = 'block';
+      document.getElementById('next_' + num).style.display = 'none';
+      document.getElementById('next_' + (num - 1)).style.display = 'none';
+      document.getElementById('create').disabled = false;
+    } else {
+      document.getElementById('new_' + num).style.display = 'none';
+      document.getElementById('new_howto_' + num).style.display = 'none';
+      new_num = num + 1
+      document.getElementById('new_' + new_num).style.display = 'block';
+      document.getElementById('new_howto_' + new_num).style.display = 'block';
+    }
+  }
+
+  function check_url() {
+    const urls = document.getElementsByName('surl');
+    console.log(urls)
+    let data = JSON.stringify({ "url": urls[urls.length - 1].value });
+    console.log(data)
+    let xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+
+    xhr.addEventListener("readystatechange", function() {
+    if(this.readyState === 4) {
+      console.log(this.responseText);
+      if (this.responseText == 'error'){
+        let d = document.createElement("div")
+        let p = document.createElement("p")
+        let text = 'The following entry did not work: ' + urls[urls.length - 1].value + ' please fix the url prior to adding.'
+        p.innerHTML = text
+        d.appendChild(p)
+        let btn1 = document.createElement("button");
+        btn1.type = 'button'
+        btn1.innerHTML = 'Go Back'
+        btn1.setAttribute("onclick", "open_close('modal')")
+        d.appendChild(btn1)
+        display_modal('warning',d,'orange');
+      }
+      if (this.responseText == 'ok'){
+        document.getElementById('add_source').disabled = false;
+      }
+    }
+    });
+
+    xhr.open("POST", "/verify");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.send(data);
+  }
+</script>

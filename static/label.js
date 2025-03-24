@@ -16,17 +16,11 @@ function showresized(){
   }
 }
 
-slider.oninput = function() {
-  output.innerHTML = 'Go to file ' + filelist[this.value] + '';
-  
-}
+//slider.oninput = function() {
+//  output.innerHTML = 'Go to file ' + filelist[this.value] + '';  
+//}
 function goto_image(imageID){
   window.location.href = '/?pro={{project}}&a=cat&f=' + filelist[imageID] + '&n='+imageID;
-}
-
-function open_close(div_id){
-    let p = document.getElementById(div_id);
-    p.style.display = p.style.display == 'block' ? 'none' : 'block';
 }
 
 function open_section(div_id){

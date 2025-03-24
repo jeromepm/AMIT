@@ -113,6 +113,15 @@ def blank_lables(label_names:list[str])->list[int]:
         label_set.append(0)
     return label_set
 
+def clean_project(pro):
+    project = get_project(pro)
+    img_dir = [d for d in project['directories'] if d['control'] == False and d['backup'] == False and d['review'] == False][0]
+    for entry in project['label_data']:
+        if os.path.isfile(f"{img_dir}/{entry['file']}") == False and entry['labels'] == blank_lables(project['labels']):
+            print(f'Deleting image {entry}')
+            project['label_data'].remove(entry)
+    save_project(project, pro)
+
 def get_chart(names:list,values:list, title:str):
     data = {}
     data['labels'] = names
@@ -134,18 +143,13 @@ def main():
     projects = all_projects()
     if len(projects) == 0:
         return render_template("index.html", tz=TZ, tzs=common_timezones)
-    if 'pro' in request.args and request.args.get("pro") != '':
+    if 'pro' in request.args and request.args.get("pro") is not None:
         project = get_project(request.args.get("pro"))
-        if 'doesnt_exist' in project:
-            return render_template("index.html", tz=TZ, tzs=common_timezones, projects=projects)
-    else:
-        return render_template("index.html", tz=TZ, tzs=common_timezones, projects=projects)
     if "a" in request.args:
         if request.args.get("a") == "conf":
             return_list = blank_lables(project['labels'])
             image_dir = [d for d in project['directories'] if d['control'] == False and d['backup'] == False and d['review'] == False][0]
             file_list = get_jpgfiles(image_dir['location'])
-
             complete = [ d for d in project['label_data'] if d['labels'] != return_list ]
             incomplete = [ d for d in project['label_data'] if d['labels'] == return_list ]
             for entry in project['label_data']:
@@ -168,17 +172,16 @@ def main():
                 data_obj[f'Total in {d["name"]} directory'] = len(files)
             data_obj[f'Total files that need labeles'] = len(incomplete)
             data_obj[f'Total files that are labeled'] = len(complete)
-            image_dir['location'] = image_dir['location'].split('/')[-1]
             return render_template("index.html", act='conf', tz=TZ, project=request.args.get("pro"), label_images = file_list, image_dir=image_dir,
                     tzs=common_timezones,  mv_dirs=mv_dirs, byLabelGraph=byLabelJSON, byImageGraph=byImageJSON, data=data_obj, sources = project['sources'])
         elif request.args.get("a") == "mv":
+            print(f'\r\nHit Move ')
             dirs = [e['name'].replace('_',' ').replace('with','should').replace('labels','label').title() for e in project['directories']]
             d_locations = [e['location'].split('/')[-1] for e in project['directories']]
             rev_dir = [d for d in project['directories'] if d['review'] == True][0]
             if 'f' in request.args:
                 file = request.args.get("f")
-                rev_dir['location'] = rev_dir['location'].split('/')[-1]
-                return render_template("index.html", project=request.form.get("project") ,act='mv', tz=TZ, tzs=common_timezones, rev_dir=rev_dir,
+                return render_template("index.html", project=request.args.get("pro") ,act='mv', tz=TZ, tzs=common_timezones, rev_dir=rev_dir,
                     dirs=dirs,d_locations=d_locations,rvw_image=file)
             else:
                 reviewfiles = get_jpgfiles(rev_dir['location'])
@@ -189,19 +192,16 @@ def main():
                     idx = 0
                     labels = []
                     for i,l in enumerate(label_n):
-                        labels.append({'name': project['labels'][i], 'checked': l})
-                        rev_dir['location'] = rev_dir['location'].split('/')[-1]                
+                        labels.append({'name': project['labels'][i], 'checked': l})                
                     return render_template("index.html", project=request.args.get("pro"), act='cat', tz=TZ, tzs=common_timezones,rev_dir=rev_dir,
                         c_image=image, c_labels=labels, idx=idx, filelist=filelist, total_images=(len(filelist)-1))
-                else:
-                    rev_dir['location'] = rev_dir['location'].split('/')[-1]
+                else:                      
                     return render_template("index.html", act='mv', project=request.args.get("pro"), tz=TZ, tzs=common_timezones,rev_dir=rev_dir,
                         dirs=dirs,d_locations=d_locations,rvw_image=reviewfiles[0])
         elif request.args.get("a") == "cat":
             file = request.args.get("f")
             idx = request.args.get("n")
             img_dir = [d for d in project['directories'] if d['control'] == False and d['backup'] == False and d['review'] == False][0]
-            img_dir['location'] = img_dir['location'].split('/')[-1]
             filelist = [ f['file'] for f in project['label_data'] ]
             if file == None:
                 image = project['label_data'][0]['file']
@@ -311,7 +311,6 @@ def main():
                 return render_template("index.html", tz=TZ, tzs=common_timezones,
                 sources=sources, schedules=sch, act='sched')
     return render_template("index.html", tz=TZ, tzs=common_timezones, projects=projects)
-
 #@app.route('/review/<path:filename>')
 #def review_file(filename):
 #    print(request.args.get('pro'))

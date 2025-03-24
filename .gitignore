@@ -1,5 +1,4 @@
 #My additions
-Dockerfile
 venv/
 data/data_files/*
 data/review_images/*

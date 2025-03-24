@@ -1,8 +1,8 @@
 <div class="my-body">
     <br>
   	<form action="{{ url_for('main')}}" method="post" id="label-form">
-  	  <img id="main-image" style="display: block" class="main_image" name="c_image" src="/img/{{img_dir.location}}/{{c_image}}?pro={{project}}">
-      <img id="resized-image" style="display: none"  class="resized_image middle_h" name="rs_image" src="">
+  	  <img id="main-image" style="display: block" class="main_image" name="c_image" src="/img/{{img_dir.name}}/{{c_image}}?pro={{project}}">
+      <img id="resized-image" style="margin-left: auto; margin-right: auto; display: none"  class="resized_image" name="rs_image" src="">
       <input type="text" name="project" value="{{project}}" style="display: none">
   	  <br><br>
       {% set control_groups = ['Nothing', 'Empty', 'Control'] %}
@@ -29,7 +29,10 @@
         <button type="button" class="dir-btn" onclick="open_close('advanced')">Adv</button><br><br>
         <div id="advanced" style="display:none;">
         <button type="button" class="dir-btn" onclick="showresized()" value="Resize">Resize</button>
-        <button type="button" onclick="verify_del()" >Delete</button>
+        <button type="submit" formaction='/errors'>&#8635;Errors</button>
+        <button type="submit" formaction='/offload/backup_chickens'>&#8635;Chickens</button>
+        <button type="submit" formaction='/offload/backup_nothing'>&#8635;Nothing</button>
+        <button type="submit" formaction='/delete' >Delete</button>
         </div>
       </form>
   	</div>

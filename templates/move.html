@@ -3,7 +3,7 @@
         <input type="text" name="project" value="{{project}}" style="display: none">
         <input type="text" name="cur_img_dir" value="{{rev_dir.location}}" style="display: none">
         <input type="text" name="mv_fname" value="{{rvw_image}}" style="display: none">
-        <img class="main_image" src="/img/{{rev_dir.location}}/{{rvw_image}}?pro={{project}}">
+        <img class="main_image" src="/img/{{rev_dir.name}}/{{rvw_image}}?pro={{project}}">
         <br><br><br>
       <div class="btn-div">
         {% for directory in dirs %}

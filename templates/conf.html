@@ -1,4 +1,5 @@
 <div class="my-body">
+
 <div class='create_project full'>
   <span onclick="open_close('data_vis')"><h3 style="text-align: center;">Data Visualisations</h3></span><br>
   <div id='data_vis'>
@@ -15,6 +16,7 @@
         <th>Location</th>
         <th>Type</th>
         <th>URL</th>
+        <th>&#9998;</th>
       </tr>
     </thead>
     <tbody>
@@ -23,6 +25,7 @@
         <td>{{source.location}}</td>
         <td>{{source.type}}</td>
         <td style="max-width: 60ch;"><div class="ellipsis">{{source.url}}</div></td>
+        <td><button style="float: right;" value='{{source.id}}' onclick="" >Delete</button></td>
       </tr>
     {% endfor %}
     </tbody>
@@ -47,38 +50,31 @@
 </div>
 <br>
 <div class='create_project full' >
-  <span onclick="open_close('img_con')" style="text-align: center;"><h3>Images</h3></span>
+  <span onclick="open_close('img_con')"><h3 style="text-align: center;">Images</h3></span>
+  <input type="text" id="cur_img_dir" value="{{image_dir.name}}" style="display: none">
   <div id='img_con' style="display: none;">
-    <br>
-    <label for="img_search">Searching in folder <span id="cur_img_dir">{{ image_dir.location }}</span>:</label>
-    <input id='img_search' class='half' type="text" maxlength="50" title="Search" onkeyup="search_images()" placeholder="Search">
-    <label class="checkbox-container">Select All Shown
-      <input type="checkbox" name="sel_all" onchange="sel_all()">
-      <span class="checkmark"></span>
-    </label>
+    <input id='img_search' type="text" maxlength="50" title="Search" onkeyup="search_images()" placeholder="Search">
     <br><br>
     <div id='img_res' style='max-height: 641px;  overflow-y: auto; width:80%; float:left;'  onscroll="scroll_div()">
       {% for image in label_images %}
         {% if loop.index <= 30 %}
-        <div onclick='select_edit(this)' oncontextmenu='full_screen(this)' value='{{image}}' class='thmb_img'>
-          <img class='full' src='/img/{{image_dir.location}}/{{image}}?pro={{project}}'>
+        <div onclick='select_edit(this)' data-file-location='{{image_dir.location}}' value='{{image}}' class='thmb_img'>
+          <img class='full' src='/img/{{image_dir.name}}/{{image}}?pro={{project}}'>
           <p>{{image}}</p>
         </div>
         {% endif %}
       {% endfor %}
     </div>
     <div class='create_project' style="width:18%; float: right;">
-      <h4 style="text-align: center;">Actions</h4><br>
-      <button class='two_third middle_h' onclick="upload_images_form()">Upload</button>
-      <br><br>      
-      <button class='two_third middle_h' onclick="verify_mass_action('move')"> Move </button>
+      <h4 style="text-align: center;">Group Actions</h4><br>
+      <button class='almost middle_h' onclick="verify_mass_action('move')"> Move </button>
       <br><br>
-      <button class='two_third middle_h' onclick="verify_mass_action('del')">Delete</button>
+      <button class='almost middle_h' onclick="verify_mass_action('del')">Delete</button>
     </div>
     <div class='create_project' style="width:18%; float: right;">
       <h4 style="text-align: center;">Folders</h4><br>
       {% for dir in mv_dirs %}
-        <button class='two_third middle_h change_folders' value='{{ dir.location }}' onclick="select_folder('{{ dir.location }}')">{{ dir.name }}</button>
+        <button class='almost middle_h' onclick="select_folder('{{ dir.location }}')">{{ dir.name }}</button>
         <br><br>
       {% endfor %}
     </div>    
@@ -87,11 +83,11 @@
   <!--<button style="float: right;" class="dir-btn" onclick="move_elements()">Move</button>-->
 </div>
 <script>
-
+const all_images = {{label_images|tojson}}
 const all_dirs = {{mv_dirs|tojson}}
 const project = '{{project}}'
-var all_images = {{label_images|tojson}}
-var images = all_images;
+let images = all_images;
+
 
 let loading = false;
 let pdiv = document.getElementById('by_label')
@@ -110,17 +106,19 @@ new Chart( pdiv, config = {
                  display: true,
                  position: 'right'
               },
-              tooltip: {callbacks: {
-                label: function (context) {
-                  let label = context.label || '';
-                  let value = context.raw || 0;
-                  let total =
-                    context.dataset.data.
-                    reduce((acc, curr) => acc + curr, 0);
-                    let percentage = (value / total * 100).toFixed(2) + '%';
-                  return label + ': ' + value + ' (' + percentage + ')';
-                }
-              }}
+              tooltip: {
+                  callbacks: {
+                      label: function (context) {
+                          let label = context.label || '';
+                          let value = context.raw || 0;
+                          let total =
+                              context.dataset.data.
+                              reduce((acc, curr) => acc + curr, 0);
+                          let percentage = (value / total * 100).toFixed(2) + '%';
+                          return label + ': ' + value + ' (' + percentage + ')';
+                      }
+                  }
+              }
             }
           }
           });
@@ -157,7 +155,159 @@ new Chart( pdiv, config = {
           }
           });
 
-disable_folder_button()
+function create_thmb(img_dir,img_file){
+  let div = document.createElement("div");
+  let img_res = document.getElementById('img_res');
+  div.classList.add("thmb_img");
+  div.onclick = function () { select_edit(this); };
+  let img = document.createElement("img");
+  img.classList.add("full");
+  img.src = '/img/' + img_dir + '/'+ img_file +'?pro=' + project;
+  div.appendChild(img);
+  let p = document.createElement("p");
+  p.innerHTML = img_file;
+  div.appendChild(p);
+  img_res.appendChild(div);
+}
+
+function load_set(){
+  if (loading) return;
+  let img_res = document.getElementById('img_res');
+  if (images.length == document.getElementsByClassName('thmb_img').length) return;
+  let cur_dir = document.getElementById('cur_img_dir').value
+  
+  loading = true;
+  let c = document.getElementsByClassName('thmb_img').length;
+  for (var i = c + 1; i <= c + 20; i++) {
+    create_thmb(cur_dir,images[i])
+  }
+  loading = false;
+}
+
+function scroll_div(){
+  const img_res = document.getElementById('img_res');
+  const cur_image_count = document.getElementsByClassName('thmb_img').length;
+  if (cur_image_count == images.length) {
+    return
+  } else if (Math.ceil(img_res.clientHeight + img_res.scrollTop) >=Math.ceil(img_res.scrollHeight*0.8)){
+    load_set();
+  };
+}
+
+function select_edit(item){
+  console.log(item)
+  if (item.classList.contains("selected")){
+    item.classList.remove("selected")
+  } else {
+    item.classList.add("selected");    
+  }
+}
+
+function search_images(){
+  let filter = document.getElementById("img_search").value.toUpperCase();
+  if (filter.length == 0){
+    images = all_images;
+    for (i = 0; i < images.length; i++) {
+      create_thmb(images[i])
+      if (i >= 30) {break; return;}
+    }
+  }
+  let filterd = [];
+  for (i = 0; i < all_images.length; i++) { 
+    if (all_images[i].toUpperCase().indexOf(filter) > -1) {
+      filterd.push(all_images[i]);
+    }
+  }
+  images = filterd
+  document.getElementById('img_res').innerHTML = ''
+  for (i = 0; i < images.length; i++) {
+    create_thmb(images[i])
+    if (i >= 30) {break; return;}
+  }
+}
+
+function mass_action(action) {
+  let selected = document.getElementsByClassName('selected');
+  console.log(document.getElementById('mv_to').value)
 
 
+//  for (let i=0;i<selected.length;i++){
+//    if(action == 'move'){
+//      let formData = new FormData();
+//      formData.append('project', project);
+//      formData.append('cur_img_dir', selected[i].getAttribute("data-file-location"));
+//      formData.append('mv_fname', selected[i].children[1].innerHTML);
+//      let xhr = new XMLHttpRequest();
+//      xhr.withCredentials = false;
+//      xhr.addEventListener("readystatechange", function() {
+//        if(this.readyState === 4) {
+//
+//        }
+//      });
+//      xhr.open("POST", "/mv/");
+//      xhr.send(formData);
+//    }
+//  }
+}
+
+function verify_mass_action(action) {
+  let selected = document.getElementsByClassName('selected');
+  for (let i=0;i<selected.length;i++){
+    console.log(selected[i].getAttribute("data-file-location"))
+    console.log(selected[i].children[1].innerHTML)
+  }
+  if (action == 'move'){
+    let d = document.createElement("div")
+    let p = document.createElement("p")
+    let text = 'Please select the directory to move the ' + selected.length + ' images to.'
+    p.innerHTML = text
+    d.appendChild(p) 
+    let form = document.createElement("form");
+    let opt = document.createElement("select");
+    for (i=0;i<all_dirs.length;i++){
+      if (all_dirs[i]['name'] != 'Review' && all_dirs[i]['name'] != 'With Labels'){
+        opt.options.add( new Option(all_dirs[i]['name'],all_dirs[i]['location']))
+      }
+    }
+    opt.id = 'mv_to'
+    form.appendChild(opt);
+    d.appendChild(form)
+    let btn = document.createElement("button");
+    btn.type = 'button'
+    btn.innerHTML = 'Confirm'
+    btn.setAttribute("onclick", "mass_action('" + action + "')")
+    d.appendChild(btn)
+    let btn1 = document.createElement("button");
+    btn1.type = 'button'
+    btn1.innerHTML = 'Go Back'
+    btn1.setAttribute("onclick", "open_close('modal')")
+    d.appendChild(btn1)
+    display_modal('Info', d, 'blue')
+
+  }
+}
+
+function select_folder(folder){
+  let formData = new FormData();
+  formData.append('project', project);
+  formData.append('new_folder', folder);
+
+  let xhr = new XMLHttpRequest();
+  xhr.withCredentials = false;
+  xhr.addEventListener("readystatechange", function() {
+    if(this.readyState === 4) {
+      console.log(this.responseText);
+      let obj = JSON.parse(this.responseText);
+      document.getElementById('cur_img_dir').value = folder;
+      document.getElementById('img_res').innerHTML = '';
+      images = obj['files']
+      for (var i = 0; i < obj['files'].length; i++) {
+        create_thmb(folder,obj['files'][i])
+        if (i >= 30)  { break; }
+      }
+    }
+  });
+  xhr.open("POST", "/select_folder/" + folder);
+  xhr.send(formData);
+}
 </script>
