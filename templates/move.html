@@ -8,7 +8,7 @@
       <div class="btn-div">
         {% for directory in dirs %}
           {% if directory != 'Review' %}
-          <button type="submit" formaction='/mv/{{d_locations[loop.index0]}}' value="{{directory}}">{{directory}}</button>
+          <button type="submit" formaction='/mv/{{d_locations[loop.index0]}}/{{rvw_image}}?pro={{project}}&cur_f={{rev_dir.name}}' value="{{directory}}">{{directory}}</button>
           {% endif %}
         {% endfor %}
 

@@ -13,6 +13,8 @@
   <script src='/static/label.js'></script>
 {% elif act == 'conf' %}
   <script src='/static/conf.js'></script>
+{% elif act == 'ovw' %}
+  <script src='/static/overview.js'></script>
 {% elif act == 'sched' %}
   <script src='/static/sched.js'></script>
 {% else %}
@@ -31,7 +33,7 @@ var filelist = {{filelist|tojson}}
       <span style=" float: left; font-size:30px; cursor:pointer; margin-left: 1vw;" onclick="open_close('sNav')">&#9776;</span>
       {% if act == 'cat' %}
         <div class="slidecontainer">
-          <input type="range" min="0" max="{{total_images}}" value="{{idx}}" class="slider" id="image_idx" onclick="goto_image(this.value)">
+          <input type="range" min="0" max="{{total_images}}" value="{{idx}}" class="slider" id="image_idx" onclick="goto_image(this.value,'{{project}}')">
         </div>
         <div class="slider-data middle_h"><p><span id="file_idx"></span></p></div>
       {% endif %}
@@ -41,14 +43,14 @@ var filelist = {{filelist|tojson}}
       <a href="javascript:void(0)" class="closebtn" onclick="open_close('sNav')">&times;</a>
       <a href="/">Main</a>
       {% if project is defined %}
+        <a href="/?pro={{project}}&a=sched">Schedules</a>
         <a href="/?pro={{project}}&a=cat">Label Images</a>
         <a href="/?pro={{project}}&a=mv">Move New Images</a>
-        <a href="/?pro={{project}}&a=conf">Overview</a>
+        <a href="/?pro={{project}}&a=ovw">Overview</a>
+        <a href="/?pro={{project}}&a=conf">Configure</a>
         <a onclick="down_options('{{project}}')">Download</a>
-        <a href="/?pro={{project}}&a=sched">Schedules</a>
         <a href="/?pro={{project}}&a=admin">Admin</a>
       {% else %}
-        <a href="/?a=sched">Schedules</a>
         <a href="/?a=admin">Admin</a>
       {% endif %}
 
@@ -73,7 +75,9 @@ var filelist = {{filelist|tojson}}
     {% elif act == 'mv' %}
       {% include 'move.html' %}
     {% elif act == 'conf' %}
-      {% include 'conf.html' %}
+      {% include 'conf.html' %}      
+    {% elif act == 'ovw' %}
+      {% include 'overview.html' %}
     {% elif act == 'sched' %}
       {% include 'sched.html' %}
     {% else %}

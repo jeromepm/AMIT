@@ -19,8 +19,9 @@ function showresized(){
 //slider.oninput = function() {
 //  output.innerHTML = 'Go to file ' + filelist[this.value] + '';  
 //}
-function goto_image(imageID){
-  window.location.href = '/?pro={{project}}&a=cat&f=' + filelist[imageID] + '&n='+imageID;
+function goto_image(imageID,project){
+  console.log('/?pro='+ project +' &a=cat&f=' + filelist[imageID] + '&n='+imageID)
+  window.location.href = '/?pro='+ project +'&a=cat&f=' + filelist[imageID] + '&n='+imageID;
 }
 
 function open_section(div_id){

@@ -5,6 +5,8 @@ from werkzeug.utils import secure_filename
 from pytz import common_timezones
 from dotenv import load_dotenv
 from datetime import datetime
+from PIL import Image
+from requests import get
 import numpy as np
 import operator
 import shutil
@@ -13,6 +15,11 @@ import json
 import cv2
 import os
 import re
+
+import logging
+
+logging.basicConfig()
+logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
 load_dotenv()
 
@@ -31,6 +38,11 @@ REVIEW_DIR = 'data/review_images'
 
 scheduler = BackgroundScheduler(timezone=TZ)
 scheduler.start()
+#if os.path.isfile("data/scheduler_jobs.json"):
+#scheduler.import_jobs("/2TBSSD/MultiLabeler/data/scheduler_jobs.json")
+
+def remove_labeled_files(pro:str,idx:int):
+    project = get_project(pro)
 
 def get_images(urls:list[str]):
     for entry in urls:
@@ -46,21 +58,31 @@ def get_images(urls:list[str]):
             try:
                 res, img = cap.read()
                 print('Read image in RTSP')
+                height, width, channels = img.shape
+                print(height,width)
+                if height > width:
+                    img = cv2.resize(img, (720, 1280))
+                else:
+                    img = cv2.resize(img, (1280, 720))
+                cv2.imwrite(f'{REVIEW_DIR}/{data[0]}/image_0{data[1]}-{ts}.jpg', img)
             except Exception as e:\
                 print(f'Error RTSP: \r\n{e}')
             finally:
                 cap.release()
         else:
             try:
-                img = cv2.imread(data[3])
+                img = Image.open(get(data[3], stream=True).raw)
+                print('Read image from URL')
+                height, width = img.size
+                print(height,width)
+                if height < width:
+                    img = img.resize((720, 1280))
+                else:
+                    img = img.resize((1280, 720))
+                img.save(f'{REVIEW_DIR}/{data[0]}/image_0{data[1]}-{ts}.jpg', 'JPEG')
+                print('URL Saved {REVIEW_DIR}/{data[0]}/image_0{data[1]}-{ts}.jpg')
             except Exception as e:
-                continue
-        height, width, channels = img.shape
-        if height > width:
-            img = cv2.resize(img, (720, 1280))
-        else:
-            img = cv2.resize(img, (1280, 720)) 
-        cv2.imwrite(f'{REVIEW_DIR}/{data[0]}/image_0{data[1]}-{ts}.jpg', img)
+                print(f'Error URL: \r\n{e}')
         print("\r\nTask executed!")
 
 def get_project(file)->dict:
@@ -113,7 +135,7 @@ def blank_lables(label_names:list[str])->list[int]:
         label_set.append(0)
     return label_set
 
-def clean_project(pro):
+def clean_project(pro:str):
     project = get_project(pro)
     img_dir = [d for d in project['directories'] if d['control'] == False and d['backup'] == False and d['review'] == False][0]
     for entry in project['label_data']:
@@ -146,7 +168,7 @@ def main():
     if 'pro' in request.args and request.args.get("pro") is not None:
         project = get_project(request.args.get("pro"))
     if "a" in request.args:
-        if request.args.get("a") == "conf":
+        if request.args.get("a") == "ovw":
             return_list = blank_lables(project['labels'])
             image_dir = [d for d in project['directories'] if d['control'] == False and d['backup'] == False and d['review'] == False][0]
             file_list = get_jpgfiles(image_dir['location'])
@@ -172,13 +194,14 @@ def main():
                 data_obj[f'Total in {d["name"]} directory'] = len(files)
             data_obj[f'Total files that need labeles'] = len(incomplete)
             data_obj[f'Total files that are labeled'] = len(complete)
-            return render_template("index.html", act='conf', tz=TZ, project=request.args.get("pro"), label_images = file_list, image_dir=image_dir,
+            return render_template("index.html", act='ovw', tz=TZ, project=request.args.get("pro"), label_images = file_list, image_dir=image_dir,
                     tzs=common_timezones,  mv_dirs=mv_dirs, byLabelGraph=byLabelJSON, byImageGraph=byImageJSON, data=data_obj, sources = project['sources'])
         elif request.args.get("a") == "mv":
             print(f'\r\nHit Move ')
             dirs = [e['name'].replace('_',' ').replace('with','should').replace('labels','label').title() for e in project['directories']]
             d_locations = [e['location'].split('/')[-1] for e in project['directories']]
             rev_dir = [d for d in project['directories'] if d['review'] == True][0]
+            rev_dir['name'] = rev_dir['location'].split('/')[-1]
             if 'f' in request.args:
                 file = request.args.get("f")
                 return render_template("index.html", project=request.args.get("pro") ,act='mv', tz=TZ, tzs=common_timezones, rev_dir=rev_dir,
@@ -220,9 +243,7 @@ def main():
                         c_image=image, c_labels=labels, idx=idx, filelist=filelist, total_images=(len(filelist)-1))
             for entry in project['label_data']:
                 if entry['file'] == file:
-                     #print(entry)
                     labels = []
-                    #print(entry['labels'])
                     for i,l in enumerate(entry['labels']):
                             labels.append({'name': project['labels'][i], 'checked': l})
                     return render_template("index.html", project=request.args.get("pro"), act='cat', tz=TZ, tzs=common_timezones, img_dir=img_dir,
@@ -310,6 +331,13 @@ def main():
             else:
                 return render_template("index.html", tz=TZ, tzs=common_timezones,
                 sources=sources, schedules=sch, act='sched')
+        elif request.args.get("a") == "conf":
+            print(f'\r\nHit Configure')
+            sources = project['sources']
+            labels = project['labels']
+            control = labels.pop(0)
+            pro = { 'control':control, 'labels': labels, 'sources':sources }
+            return render_template("index.html", act='conf', tz=TZ,  tzs=common_timezones, project=request.args.get("pro"),pro=pro)                
     return render_template("index.html", tz=TZ, tzs=common_timezones, projects=projects)
 #@app.route('/review/<path:filename>')
 #def review_file(filename):
@@ -336,7 +364,7 @@ def verify():
         finally:
             return 'error'
     else:
-        print(f"Trying to real {request.json['url']} as a URL with CV2")
+        print(f"Trying to read {request.json['url']} as a URL with CV2")
         try:
             cv2.imread(request.json['url'])
         except Exception as e:
@@ -372,14 +400,14 @@ def project(action):
                 pro_pkl['sources'].append({'name': f'camera0{i}', 'id': i, 'location': e, 'type' : request.form.getlist('stype')[i], 'url' : request.form.getlist('surl')[i] })
         pro_pkl['label_data'] = [] 
         save_project(pro_pkl, f"{request.form.get('pname').replace(' ', '_')}_{ts}.pkl")
-
-
         if request.form.get('fname') == None:
             return redirect(f"/", code=302)
-    if action == 'select':
+    elif action == 'edit':
+        project = get_project(request.form.get('project'))
+    elif action == 'select':
         project = get_project(file)
-
     return render_template("index.html", tz=TZ)
+
 
 # Example Pickle File
 # 'name': '',
@@ -423,8 +451,10 @@ def schedule(action):
             args=[request.form.getlist('image_source')],
             name=request.form.get('schname'),
         )
+        scheduler.export_jobs("data/scheduler_jobs.json")
     elif action == 'delete':
         r = scheduler.remove_job(request.form.get('sch_id'))
+        scheduler.export_jobs("data/scheduler_jobs.json")
     if 'pro' in request.args:
         return redirect(f"/?pro={request.form.get('project')}&?a=sched")
     else:
@@ -496,14 +526,15 @@ def label_buttons(action):
     f = project['label_data'][0]['file']
     return redirect(f"/?pro={request.form.get('project')}&a=cat&f={f}&n=0", code=302)
 
-@app.route('/mv/<path:folder>', methods=["POST"])
-def move_file(folder):
-    project = get_project(request.form.get('project'))
+@app.route('/mv/<path:folder>/<path:image_name>', methods=["POST"])
+def move_file(folder,image_name):
+    project = get_project(request.args.get('pro'))
     if 'doesnt_exist' in project:
         return redirect(f"/?pro={request.form.get('project')}", code=302)    
-    cur_folder =request.form.get('cur_img_dir')
+    cur_folder = request.args.get('cur_f')
+    print(cur_folder)
 
-    if folder in request.form.get('project'):
+    if folder in request.args.get('pro'):
         new_folder = f'{REVIEW_DIR}/{folder}'
     else:
         new_folder = [e['location'] for e in project['directories'] if e['location'].endswith(folder)][0]
@@ -513,19 +544,19 @@ def move_file(folder):
     else:
         cur_folder = [e['location'] for e in project['directories'] if e['location'].endswith(cur_folder)][0]
 
-    mv_file = request.form.get('mv_fname')
-    print(f"{cur_folder}/{mv_file}", f"{new_folder}/{mv_file}")
+    print(f"{cur_folder}/{image_name}", f"{new_folder}/{image_name}")
     
     if cur_folder != new_folder:
-        shutil.move(f"{cur_folder}/{mv_file}", f"{new_folder}/{mv_file}")
+        shutil.move(f"{cur_folder}/{image_name}", f"{new_folder}/{image_name}")
         if folder == 'labels':
-            project['label_data'].append({'file' : mv_file, 'labels' : blank_lables(project['labels'])})
+            project['label_data'].append({'file' : image_name, 'labels' : blank_lables(project['labels'])})
             save_project(project, request.args.get('pro'))
         if cur_folder == 'labels':
             entry = [e for e in project['label_data'] if e['file'] == mv_file][0]
             project['label_data'].remove(entry)
             save_project(project, request.args.get('pro'))
-    review_files = get_jpgfiles(cur_folder)
+    cur_folder = [d for d in project['directories'] if cur_folder in d['location']][0]
+    review_files = get_jpgfiles(cur_folder['location'])
     if len(review_files) == 0:
         return redirect(f"/?pro={request.form.get('project')}&a=cat", code=302)
     else:
@@ -585,7 +616,6 @@ def delete():
     else:
         return 'ok'
 
-
 @app.route('/download', methods=["POST"])
 def download():
     @after_this_request
@@ -632,7 +662,6 @@ def download():
         pickle.dump(project, f, protocol=pickle.HIGHEST_PROTOCOL)
         print(f"Download file {request.form.get('project')} ready")
     return send_file(request.form.get('project'), download_name=request.form.get('project'))
-
 
 @app.route('/upload/<path:folder>', methods=['POST']) 
 def upload(folder): 

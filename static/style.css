@@ -6,7 +6,7 @@ body {
 }
 
 .full{ width: 100%  !important; }
-.almost{ width: 80vw !important; }
+.almost{ width: 80% !important; }
 .two_third{ width: 60%  !important; }
 .half{ width: 50%  !important; }
 .third{ width: 30%  !important; }
@@ -400,6 +400,11 @@ input[type=text], select, textarea{
   border-radius: 4px;
   box-sizing: border-box;
   resize: vertical;
+}
+
+input[type=text]:disabled {
+  color: #c8c8c8;
+  background-color: #545454;
 }
 
 /* Style the label to display next to the inputs */

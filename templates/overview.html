@@ -1,0 +1,184 @@
+<div class="my-body">
+
+<div class='create_project full'>
+  <span onclick="open_close('data_vis')"><h3 style="text-align: center;">Data Visualisations</h3></span><br>
+  <div id='data_vis'>
+    <div style="width: 45%; float: left; margin-left: 2vw; margin-top: 2vh;"><canvas id='by_label'></canvas></div><br>
+    <div style="width: 45%; float: right; margin-left: 2vw; margin-top: 2vh;"><canvas id='by_source'></canvas></div>
+  </div>
+</div>
+<div class='create_project full'>
+  <span onclick="open_close('data_ovw')"><h3 style="text-align: center;">Data Overview</h3></span><br>
+  <div id='data_ovw'>
+    <table style="float:left; margin-right: 2em;" id="source_data" class='my-table two_third'>
+    <thead>
+      <tr>
+        <th>Location</th>
+        <th>Type</th>
+        <th>URL</th>
+        <th>&#9998;</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for source in sources %}
+      <tr>
+        <td>{{source.location}}</td>
+        <td>{{source.type}}</td>
+        <td style="max-width: 60ch;"><div class="ellipsis">{{source.url}}</div></td>
+        <td><button style="float: right;" value='{{source.id}}' onclick="" >Delete</button></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    </table>    
+    <table style="float:left;" id="admin_data" class='my-table third'>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for key, value in data.items() %}
+      <tr>
+        <td>{{key}}</td>
+        <td style="text-align: center;">{{value}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+  </div>
+</div>
+<br>
+<div class='create_project full' >
+  <span onclick="open_close('img_con')"><h3 style="text-align: center;">Images</h3></span>
+  <input type="text" id="cur_img_dir" value="{{image_dir.name}}" style="display: none">
+  <div id='img_con' style="display: none;">
+    <input id='img_search' type="text" maxlength="50" title="Search" onkeyup="search_images()" placeholder="Search">
+    <br><br>
+    <div id='img_res' style='max-height: 641px;  overflow-y: auto; width:80%; float:left;'  onscroll="scroll_div()">
+      {% for image in label_images %}
+        {% if loop.index <= 30 %}
+        <div onclick='select_edit(this)' data-file-location='{{image_dir.location}}' value='{{image}}' class='thmb_img'>
+          <img class='full' src='/img/{{image_dir.name}}/{{image}}?pro={{project}}'>
+          <p>{{image}}</p>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class='create_project' style="width:18%; float: right;">
+      <h4 style="text-align: center;">Group Actions</h4><br>
+      <button class='almost middle_h' onclick="verify_mass_action('move')"> Move </button>
+      <br><br>
+      <button class='almost middle_h' onclick="verify_mass_action('del')">Delete</button>
+    </div>
+    <div class='create_project' style="width:18%; float: right;">
+      <h4 style="text-align: center;">Folders</h4><br>
+      {% for dir in mv_dirs %}
+        <button class='almost middle_h' onclick="select_folder('{{ dir.location }}')">{{ dir.name }}</button>
+        <br><br>
+      {% endfor %}
+    </div>    
+  </div>
+  
+  <!--<button style="float: right;" class="dir-btn" onclick="move_elements()">Move</button>-->
+</div>
+<script>
+const all_images = {{label_images|tojson}}
+const all_dirs = {{mv_dirs|tojson}}
+const project = '{{project}}'
+let images = all_images;
+
+
+let loading = false;
+let pdiv = document.getElementById('by_label')
+let obj = {{byLabelGraph | safe}}
+new Chart( pdiv, config = {
+          type: 'pie',
+          data: obj['data'],
+          options: {
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: obj['title']
+              },
+              legend: { 
+                 display: true,
+                 position: 'right'
+              },
+              tooltip: {
+                  callbacks: {
+                      label: function (context) {
+                          let label = context.label || '';
+                          let value = context.raw || 0;
+                          let total =
+                              context.dataset.data.
+                              reduce((acc, curr) => acc + curr, 0);
+                          let percentage = (value / total * 100).toFixed(2) + '%';
+                          return label + ': ' + value + ' (' + percentage + ')';
+                      }
+                  }
+              }
+            }
+          }
+          });
+pdiv = document.getElementById('by_source')
+obj = {{byImageGraph | safe}}
+new Chart( pdiv, config = {
+          type: 'pie',
+          data: obj['data'],
+          options: {
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: obj['title']
+              },
+              legend: { 
+                 display: true,
+                 position: 'right'
+              },
+              tooltip: {
+                  callbacks: {
+                      label: function (context) {
+                          let label = context.label || '';
+                          let value = context.raw || 0;
+                          let total =
+                              context.dataset.data.
+                              reduce((acc, curr) => acc + curr, 0);
+                          let percentage = (value / total * 100).toFixed(2) + '%';
+                          return label + ': ' + value + ' (' + percentage + ')';
+                      }
+                  }
+              }
+            }
+          }
+          });
+
+
+function mass_action(action) {
+  let selected = document.getElementsByClassName('selected');
+  console.log(document.getElementById('mv_to').value)
+
+
+//  for (let i=0;i<selected.length;i++){
+//    if(action == 'move'){
+//      let formData = new FormData();
+//      formData.append('project', project);
+//      formData.append('cur_img_dir', selected[i].getAttribute("data-file-location"));
+//      formData.append('mv_fname', selected[i].children[1].innerHTML);
+//      let xhr = new XMLHttpRequest();
+//      xhr.withCredentials = false;
+//      xhr.addEventListener("readystatechange", function() {
+//        if(this.readyState === 4) {
+//
+//        }
+//      });
+//      xhr.open("POST", "/mv/");
+//      xhr.send(formData);
+//    }
+//  }
+}
+
+
+</script>

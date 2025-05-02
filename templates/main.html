@@ -48,11 +48,11 @@
         <label for="pdescr">Project Description: <span title="Description of the project."> &#9432;</span></label>   
         <input type="text" maxlength="255" name="pdescr" id="pdescr" pattern="[\-_a-zA-Z0-9,'\s]{1,255}"  oninput="enable_next('0')" title="Project Description">
         <br>
-        <label for="ctrlname">Base Label: <span title="Select the word to use for label group that is onsidered normal or empty."> &#9432;</span></label>
+        <label for="ctrlname">Base Label: <span title="Select the word to use for label group that is considered normal or empty."> &#9432;</span></label>
         <select name="ctrl_name" id="ctrl_name" onchange="update_labels()">
-          <option value="nothing">Nothing</option>
-          <option value="control">Control</option>
-          <option value="empty">Empty</option>
+          <option value="Nothing">Nothing</option>
+          <option value="Control">Control</option>
+          <option value="Empty">Empty</option>
         </select>  
         <br>
         <label for="lname">Project Labels: <span title="A comma seperated list of label values without quotes &#013; The order can not be changed."> &#9432;</span></label>
@@ -88,7 +88,7 @@
 <script>
   function select_proj(pid){
     let f = document.getElementById('project_tables').rows.item(pid).cells.item(0).innerHTML;
-    document.location.href = '/?pro='+f + '&a=conf';
+    document.location.href = '/?pro='+f + '&a=ovw';
   }
 
   function start_new() {
