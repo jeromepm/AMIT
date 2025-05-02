@@ -13,7 +13,7 @@ docker run -d -p <PORT>:8286
 ```
 Verify the image:
 ```
-sha256:cafeb57e898ae173048c5c553ea52f6c9c06fefbf1158eca775414e104b42300
+sha256:a89a421b77174214f98812fd9b4afa58049cd5dc8c71827b50f51603e1585a07
 ```
 
 If you would like access to the images and files, you will need to mount a volume to the data directory.
